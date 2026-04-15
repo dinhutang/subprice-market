@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel Subprice</title>
+<title>Admin Panel</title>
 
 <style>
 body{
     margin:0;
     font-family:Arial;
     background:#111;
-    color:white;
+    color:#fff;
 }
 
 .header{
@@ -21,9 +21,9 @@ body{
 }
 
 .container{
-    padding:15px;
     max-width:900px;
     margin:auto;
+    padding:15px;
 }
 
 .card{
@@ -46,21 +46,21 @@ button{
 .reject{background:red;color:white;}
 
 .badge{
-    font-size:12px;
     padding:3px 8px;
     background:#333;
     border-radius:8px;
+    font-size:12px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">👮 ADMIN PANEL SUBPRICE</div>
+<div class="header">ADMIN PANEL SYSTEM</div>
 
 <div class="container">
 
-<button onclick="loadData()">🔄 LOAD PRODUK</button>
+<button onclick="loadData()">LOAD DATA</button>
 
 <div id="list"></div>
 
@@ -68,18 +68,19 @@ button{
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxw1ssd7FQve44TKq_xnrKejngWHondPe1IKB8yAlYYPJ2CqVGY5a0nGPghRhlpCWuq/exec";
+const API_URL = "PASTE_WEB_APP_URL_KAU_DI_SINI";
 
 function loadData(){
 
 fetch(API_URL)
-.then(res=>res.json())
-.then(data=>{
+.then(res => res.json())
+.then(data => {
 
 let list = document.getElementById("list");
-list.innerHTML="";
+list.innerHTML = "";
 
-for(let i=1;i<data.length;i++){
+// start dari 1 (skip header)
+for(let i = 1; i < data.length; i++){
 
 list.innerHTML += `
 <div class="card">
@@ -88,32 +89,34 @@ list.innerHTML += `
 📍 ${data[i][3]}<br>
 📞 ${data[i][4]}<br>
 📝 ${data[i][5]}<br>
+
 <span class="badge">${data[i][6] || "PENDING"}</span><br><br>
 
-<button class="approve" onclick="updateStatus(${i},'APPROVED')">APPROVE</button>
-<button class="reject" onclick="updateStatus(${i},'REJECTED')">REJECT</button>
+<button class="approve" onclick="updateStatus(${i}, 'APPROVED')">APPROVE</button>
+<button class="reject" onclick="updateStatus(${i}, 'REJECTED')">REJECT</button>
 </div>
 `;
 }
 
 });
+
 }
 
-function updateStatus(row,status){
+function updateStatus(row, status){
 
-fetch(API_URL,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
+fetch(API_URL, {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
 },
 body: JSON.stringify({
-action:"updateStatus",
-row:row,
-status:status
+action: "updateStatus",
+row: row,
+status: status
 })
 })
-.then(res=>res.text())
-.then(()=>{
+.then(res => res.text())
+.then(() => {
 loadData();
 });
 
