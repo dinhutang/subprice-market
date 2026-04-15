@@ -44,13 +44,16 @@ button{width:100%;padding:12px;margin-top:10px;background:#25D366;border:none;bo
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxw1ssd7FQve44TKq_xnrKejngWHondPe1IKB8yAlYYPJ2CqVGY5a0nGPghRhlpCWuq/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwpi34YtbXMCNfsv7e3dwXFO_Zc3UOZbQ7_tz5o730KRIi6RlQeZziD0xXMEDHOKg_7/exec";
 
-// SUBMIT
+// ================= SUBMIT =================
 function submitProduk(){
 
 fetch(API_URL,{
 method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
 body:JSON.stringify({
 nama:document.getElementById("nama").value,
 harga:document.getElementById("harga").value,
@@ -58,11 +61,13 @@ daerah:document.getElementById("daerah").value,
 whatsapp:document.getElementById("whatsapp").value,
 desc:document.getElementById("desc").value
 })
-}).then(()=>alert("Berjaya submit!"));
+})
+.then(res=>res.text())
+.then(()=>alert("✅ Produk berjaya dihantar!"));
 
 }
 
-// LOAD
+// ================= LOAD =================
 async function loadData(){
 
 let res = await fetch(API_URL);
@@ -72,6 +77,10 @@ let list = document.getElementById("list");
 list.innerHTML="";
 
 for(let i=1;i<data.length;i++){
+
+// hanya show APPROVED
+if(data[i][6] !== "APPROVED") continue;
+
 list.innerHTML += `
 <div class="product">
 <b>${data[i][1]}</b><br>
@@ -80,6 +89,7 @@ RM ${data[i][2]}<br>
 📞 ${data[i][4]}<br>
 </div>`;
 }
+
 }
 
 </script>
