@@ -6,57 +6,19 @@
 <title>Admin Panel</title>
 
 <style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:#111;
-    color:#fff;
-}
-
-.header{
-    background:#222;
-    padding:15px;
-    text-align:center;
-    font-weight:bold;
-}
-
-.container{
-    max-width:900px;
-    margin:auto;
-    padding:15px;
-}
-
-.card{
-    background:#1c1c1c;
-    padding:15px;
-    margin-bottom:10px;
-    border-radius:10px;
-}
-
-button{
-    padding:10px;
-    margin:5px 5px 0 0;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.approve{background:green;color:white;}
-.reject{background:red;color:white;}
-
-.badge{
-    padding:3px 8px;
-    background:#333;
-    border-radius:8px;
-    font-size:12px;
-}
+body{font-family:Arial;background:#111;color:#fff;margin:0}
+.header{padding:15px;background:#222;text-align:center}
+.container{padding:15px;max-width:900px;margin:auto}
+.card{background:#1c1c1c;padding:15px;margin-bottom:10px;border-radius:10px}
+button{padding:10px;margin:5px;border:none;border-radius:6px;cursor:pointer}
+.approve{background:green;color:#fff}
+.reject{background:red;color:#fff}
 </style>
 </head>
 
 <body>
 
-<div class="header">ADMIN PANEL SYSTEM</div>
+<div class="header">ADMIN PANEL V2</div>
 
 <div class="container">
 
@@ -68,58 +30,61 @@ button{
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyj8S0U3qxUpfILyelds15tXzbIYs3nG8MBeCOMxXHDCfZY1XzPU1AAj_v202W9ChgA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyOKBQWZZt6xRVBQ6f2YfLfcyYpvTI5zV7IaSCHAhawXPT8Qq49fwOs4lmCVH5v5TOi/exec";
 
-function loadData(){
+async function loadData(){
+  try {
+    let res = await fetch(API_URL);
+    let data = await res.json();
 
-fetch(API_URL)
-.then(res => res.json())
-.then(data => {
+    let list = document.getElementById("list");
+    list.innerHTML = "";
 
-let list = document.getElementById("list");
-list.innerHTML = "";
+    for(let i = 1; i < data.length; i++){
 
-// start dari 1 (skip header)
-for(let i = 1; i < data.length; i++){
+      list.innerHTML += `
+      <div class="card">
+        <b>${data[i][1]}</b><br>
+        💰 RM ${data[i][2]}<br>
+        📍 ${data[i][3]}<br>
+        📞 ${data[i][4]}<br>
+        📝 ${data[i][5]}<br>
+        <b>Status:</b> ${data[i][6]}<br><br>
 
-list.innerHTML += `
-<div class="card">
-<b>${data[i][1]}</b><br>
-💰 RM ${data[i][2]}<br>
-📍 ${data[i][3]}<br>
-📞 ${data[i][4]}<br>
-📝 ${data[i][5]}<br>
+        <button class="approve" onclick="updateStatus(${i},'APPROVED')">APPROVE</button>
+        <button class="reject" onclick="updateStatus(${i},'REJECTED')">REJECT</button>
+      </div>
+      `;
+    }
 
-<span class="badge">${data[i][6] || "PENDING"}</span><br><br>
-
-<button class="approve" onclick="updateStatus(${i}, 'APPROVED')">APPROVE</button>
-<button class="reject" onclick="updateStatus(${i}, 'REJECTED')">REJECT</button>
-</div>
-`;
+  } catch(err){
+    alert("ERROR LOAD DATA: " + err);
+    console.log(err);
+  }
 }
 
-});
+async function updateStatus(row,status){
 
-}
+  try {
+    let res = await fetch(API_URL, {
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        action:"updateStatus",
+        row:row,
+        status:status
+      })
+    });
 
-function updateStatus(row, status){
+    let text = await res.text();
+    console.log(text);
 
-fetch(API_URL, {
-method: "POST",
-headers: {
-"Content-Type": "application/json"
-},
-body: JSON.stringify({
-action: "updateStatus",
-row: row,
-status: status
-})
-})
-.then(res => res.text())
-.then(() => {
-loadData();
-});
+    loadData();
 
+  } catch(err){
+    alert("ERROR UPDATE: " + err);
+    console.log(err);
+  }
 }
 
 </script>
