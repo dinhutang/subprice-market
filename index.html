@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Semak Stok Buku</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f0f0f;
+    color: white;
+    margin: 0;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    color: gold;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: gold;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.card {
+    background: #1c1c1c;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.ok { color: lightgreen; }
+.low { color: orange; }
+.sold { color: red; }
+
+.badge {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: #333;
+    display: inline-block;
+    margin-top: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>📦 Semak Stok Buku</h2>
+
+<input type="text" id="search" placeholder="Cari nama buku...">
+
+<button onclick="loadData()">🔍 Semak Stok</button>
+
+<div id="list"></div>
+
+</div>
+
+<script>
+
+let dataGlobal = [];
+
+// 🔥 GANTI API INI DENGAN GOOGLE APPS SCRIPT KAU
+const API_URL = "https://script.google.com/macros/s/AKfycbxw1ssd7FQve44TKq_xnrKejngWHondPe1IKB8yAlYYPJ2CqVGY5a0nGPghRhlpCWuq/exec";
+
+// LOAD DATA
+async function loadData(){
+
+    try {
+        let res = await fetch(API_URL);
+        let data = await res.json();
+
+        dataGlobal = data;
+
+        displayData(dataGlobal);
+
+    } catch (error) {
+        document.getElementById("list").innerHTML =
+        "<p style='color:red;'>Error load data API</p>";
+    }
+}
+
+// DISPLAY DATA
+function displayData(data){
+
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    for(let i = 1; i < data.length; i++){
+
+        let nama = data[i][1];
+        let stok = data[i][2];
+
+        let status = "ok";
+
+        if(stok == 0){
+            status = "sold";
+        } 
+        else if(stok < 5){
+            status = "low";
+        }
+
+        list.innerHTML += `
+        <div class="card">
+            <b>${nama}</b><br>
+            Stok: <span class="${status}">${stok}</span><br>
+            <div class="badge">${status.toUpperCase()}</div>
+        </div>
+        `;
+    }
+}
+
+// SEARCH FUNCTION
+document.getElementById("search").addEventListener("input", function(){
+
+    let keyword = this.value.toLowerCase();
+
+    let filtered = dataGlobal.filter(item =>
+        item[1] && item[1].toLowerCase().includes(keyword)
+    );
+
+    displayData(filtered);
+});
+
+</script>
+
+</body>
+</html>
