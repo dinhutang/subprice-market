@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel Subprice</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#111;
+    color:white;
+}
+
+.header{
+    background:#222;
+    padding:15px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.container{
+    padding:15px;
+    max-width:900px;
+    margin:auto;
+}
+
+.card{
+    background:#1c1c1c;
+    padding:15px;
+    margin-bottom:10px;
+    border-radius:10px;
+}
+
+button{
+    padding:10px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    margin:5px 5px 0 0;
+    font-weight:bold;
+}
+
+.approve{background:green;color:white;}
+.reject{background:red;color:white;}
+
+.badge{
+    font-size:12px;
+    padding:3px 8px;
+    background:#333;
+    border-radius:8px;
+    display:inline-block;
+    margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">👮 ADMIN PANEL SUBPRICE</div>
+
+<div class="container">
+
+<button onclick="loadData()">🔄 LOAD PRODUK</button>
+
+<div id="list"></div>
+
+</div>
+
+<script>
+
+const API_URL = "https://script.google.com/macros/s/AKfycbxw1ssd7FQve44TKq_xnrKejngWHondPe1IKB8yAlYYPJ2CqVGY5a0nGPghRhlpCWuq/exec";
+
+function loadData(){
+
+fetch(API_URL)
+.then(res=>res.json())
+.then(data=>{
+
+let list = document.getElementById("list");
+list.innerHTML="";
+
+for(let i=1;i<data.length;i++){
+
+list.innerHTML += `
+<div class="card">
+<b>${data[i][1]}</b><br>
+💰 RM ${data[i][2]}<br>
+📍 ${data[i][3]}<br>
+📞 ${data[i][4]}<br>
+📝 ${data[i][5]}<br>
+<span class="badge">${data[i][6] || "PENDING"}</span><br><br>
+
+<button class="approve" onclick="updateStatus(${i},'APPROVED')">APPROVE</button>
+<button class="reject" onclick="updateStatus(${i},'REJECTED')">REJECT</button>
+</div>
+`;
+}
+
+});
+}
+
+function updateStatus(row,status){
+
+fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+action:"updateStatus",
+row:row,
+status:status
+})
+})
+.then(()=>loadData());
+
+}
+
+</script>
+
+</body>
+</html>
