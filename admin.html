@@ -18,7 +18,7 @@ button{padding:10px;margin:5px;border:none;border-radius:6px;cursor:pointer}
 
 <body>
 
-<div class="header">ADMIN PANEL V2</div>
+<div class="header">👮 ADMIN PANEL</div>
 
 <div class="container">
 
@@ -30,61 +30,53 @@ button{padding:10px;margin:5px;border:none;border-radius:6px;cursor:pointer}
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyOKBQWZZt6xRVBQ6f2YfLfcyYpvTI5zV7IaSCHAhawXPT8Qq49fwOs4lmCVH5v5TOi/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwpi34YtbXMCNfsv7e3dwXFO_Zc3UOZbQ7_tz5o730KRIi6RlQeZziD0xXMEDHOKg_7/exec";
 
+// ================= LOAD =================
 async function loadData(){
-  try {
-    let res = await fetch(API_URL);
-    let data = await res.json();
 
-    let list = document.getElementById("list");
-    list.innerHTML = "";
+let res = await fetch(API_URL);
+let data = await res.json();
 
-    for(let i = 1; i < data.length; i++){
+let list = document.getElementById("list");
+list.innerHTML="";
 
-      list.innerHTML += `
-      <div class="card">
-        <b>${data[i][1]}</b><br>
-        💰 RM ${data[i][2]}<br>
-        📍 ${data[i][3]}<br>
-        📞 ${data[i][4]}<br>
-        📝 ${data[i][5]}<br>
-        <b>Status:</b> ${data[i][6]}<br><br>
+for(let i=1;i<data.length;i++){
 
-        <button class="approve" onclick="updateStatus(${i},'APPROVED')">APPROVE</button>
-        <button class="reject" onclick="updateStatus(${i},'REJECTED')">REJECT</button>
-      </div>
-      `;
-    }
+list.innerHTML += `
+<div class="card">
+<b>${data[i][1]}</b><br>
+💰 RM ${data[i][2]}<br>
+📍 ${data[i][3]}<br>
+📞 ${data[i][4]}<br>
+📝 ${data[i][5]}<br>
+<b>Status:</b> ${data[i][6]}<br><br>
 
-  } catch(err){
-    alert("ERROR LOAD DATA: " + err);
-    console.log(err);
-  }
+<button class="approve" onclick="updateStatus(${i},'APPROVED')">APPROVE</button>
+<button class="reject" onclick="updateStatus(${i},'REJECTED')">REJECT</button>
+</div>
+`;
 }
 
+}
+
+// ================= UPDATE =================
 async function updateStatus(row,status){
 
-  try {
-    let res = await fetch(API_URL, {
-      method:"POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        action:"updateStatus",
-        row:row,
-        status:status
-      })
-    });
+await fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+action:"updateStatus",
+row:row,
+status:status
+})
+});
 
-    let text = await res.text();
-    console.log(text);
+loadData();
 
-    loadData();
-
-  } catch(err){
-    alert("ERROR UPDATE: " + err);
-    console.log(err);
-  }
 }
 
 </script>
