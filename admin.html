@@ -35,10 +35,10 @@ body{
 
 button{
     padding:10px;
+    margin:5px 5px 0 0;
     border:none;
     border-radius:6px;
     cursor:pointer;
-    margin:5px 5px 0 0;
     font-weight:bold;
 }
 
@@ -50,8 +50,6 @@ button{
     padding:3px 8px;
     background:#333;
     border-radius:8px;
-    display:inline-block;
-    margin-top:5px;
 }
 </style>
 </head>
@@ -105,13 +103,19 @@ function updateStatus(row,status){
 
 fetch(API_URL,{
 method:"POST",
-body:JSON.stringify({
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify({
 action:"updateStatus",
 row:row,
 status:status
 })
 })
-.then(()=>loadData());
+.then(res=>res.text())
+.then(()=>{
+loadData();
+});
 
 }
 
