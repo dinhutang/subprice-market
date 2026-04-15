@@ -3,80 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Semak Stok Buku</title>
+<title>Subprice Market</title>
 
 <style>
-body {
-    font-family: Arial;
-    background: #0f0f0f;
-    color: white;
-    margin: 0;
-}
-
-.container {
-    max-width: 500px;
-    margin: auto;
-    padding: 20px;
-}
-
-h2 {
-    text-align: center;
-    color: gold;
-}
-
-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    border: none;
-    outline: none;
-}
-
-button {
-    width: 100%;
-    padding: 12px;
-    background: gold;
-    border: none;
-    border-radius: 10px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 15px;
-}
-
-.card {
-    background: #1c1c1c;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-}
-
-.ok { color: lightgreen; }
-.low { color: orange; }
-.sold { color: red; }
-
-.badge {
-    font-size: 12px;
-    padding: 3px 8px;
-    border-radius: 10px;
-    background: #333;
-    display: inline-block;
-    margin-top: 5px;
-}
+body{font-family:Arial;background:#0f0f0f;color:white;margin:0}
+.header{background:#ee4d2d;padding:15px;text-align:center;font-weight:bold}
+.container{padding:15px;max-width:600px;margin:auto}
+.card{background:#1c1c1c;padding:15px;border-radius:12px;margin-bottom:10px}
+input,textarea{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:none}
+button{width:100%;padding:12px;margin-top:10px;background:#25D366;border:none;border-radius:8px;font-weight:bold}
+.product{background:#222;padding:10px;margin-top:10px;border-radius:8px}
 </style>
 </head>
 
 <body>
 
+<div class="header">🛒 SUBPRICE MARKET</div>
+
 <div class="container">
 
-<h2>📦 Semak Stok Buku</h2>
+<div class="card">
+<h3>➕ Submit Produk</h3>
 
-<input type="text" id="search" placeholder="Cari nama buku...">
+<input id="nama" placeholder="Nama Produk">
+<input id="harga" placeholder="Harga">
+<input id="daerah" placeholder="Daerah">
+<input id="whatsapp" placeholder="WhatsApp">
+<textarea id="desc" placeholder="Description"></textarea>
 
-<button onclick="loadData()">🔍 Semak Stok</button>
+<button onclick="submitProduk()">Submit</button>
+</div>
+
+<div class="card">
+<button onclick="loadData()">📦 Load Produk</button>
+</div>
 
 <div id="list"></div>
 
@@ -84,69 +44,43 @@ button {
 
 <script>
 
-let dataGlobal = [];
-
-// 🔥 GANTI API INI DENGAN GOOGLE APPS SCRIPT KAU
 const API_URL = "https://script.google.com/macros/s/AKfycbxw1ssd7FQve44TKq_xnrKejngWHondPe1IKB8yAlYYPJ2CqVGY5a0nGPghRhlpCWuq/exec";
 
-// LOAD DATA
+// SUBMIT
+function submitProduk(){
+
+fetch(API_URL,{
+method:"POST",
+body:JSON.stringify({
+nama:document.getElementById("nama").value,
+harga:document.getElementById("harga").value,
+daerah:document.getElementById("daerah").value,
+whatsapp:document.getElementById("whatsapp").value,
+desc:document.getElementById("desc").value
+})
+}).then(()=>alert("Berjaya submit!"));
+
+}
+
+// LOAD
 async function loadData(){
 
-    try {
-        let res = await fetch(API_URL);
-        let data = await res.json();
+let res = await fetch(API_URL);
+let data = await res.json();
 
-        dataGlobal = data;
+let list = document.getElementById("list");
+list.innerHTML="";
 
-        displayData(dataGlobal);
-
-    } catch (error) {
-        document.getElementById("list").innerHTML =
-        "<p style='color:red;'>Error load data API</p>";
-    }
+for(let i=1;i<data.length;i++){
+list.innerHTML += `
+<div class="product">
+<b>${data[i][1]}</b><br>
+RM ${data[i][2]}<br>
+📍 ${data[i][3]}<br>
+📞 ${data[i][4]}<br>
+</div>`;
 }
-
-// DISPLAY DATA
-function displayData(data){
-
-    let list = document.getElementById("list");
-    list.innerHTML = "";
-
-    for(let i = 1; i < data.length; i++){
-
-        let nama = data[i][1];
-        let stok = data[i][2];
-
-        let status = "ok";
-
-        if(stok == 0){
-            status = "sold";
-        } 
-        else if(stok < 5){
-            status = "low";
-        }
-
-        list.innerHTML += `
-        <div class="card">
-            <b>${nama}</b><br>
-            Stok: <span class="${status}">${stok}</span><br>
-            <div class="badge">${status.toUpperCase()}</div>
-        </div>
-        `;
-    }
 }
-
-// SEARCH FUNCTION
-document.getElementById("search").addEventListener("input", function(){
-
-    let keyword = this.value.toLowerCase();
-
-    let filtered = dataGlobal.filter(item =>
-        item[1] && item[1].toLowerCase().includes(keyword)
-    );
-
-    displayData(filtered);
-});
 
 </script>
 
